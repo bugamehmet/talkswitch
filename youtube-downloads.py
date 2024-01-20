@@ -10,28 +10,28 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 def get_video_url(url: str, output_path: str = "output", filename: str = "test"):
     try:
         yt = YouTube(url)
-        audio_stream = yt.streams.filter(only_audio=True).first()
-
-        if audio_stream is None:
-            logging.warning("Bulunamadı!!")
-            return None
 
         Path(output_path).mkdir(parents=True, exist_ok=True)
 
+        audio_stream = yt.streams.filter(only_audio=True).first()
+        video_stream = yt.streams.filter(only_video=True).first()
+
+        if audio_stream is None or video_stream is None:
+            logging.warning("Bulunamadı!!")
+            return None
+
         mp3_file_path = os.path.join(output_path, filename + ".mp3")
-        logging.info(f"Downloading Started... {mp3_file_path}")
+        mp4_file_path = os.path.join(output_path, filename + ".mp4")
 
-        downloaded_file_path = audio_stream.download(output_path)
+        logging.info(f"Downloading MP3 Started... {mp3_file_path}")
+        audio_stream.download(output_path=output_path, filename=filename + ".mp3")
+        logging.info(f"MP3 Download Successful!")
 
-        audio_clip = AudioFileClip(downloaded_file_path)
-        audio_clip.write_audiofile(mp3_file_path, codec="libmp3lame", verbose=False, logger=None)
-        audio_clip.close()
+        logging.info(f"Downloading MP4 Started... {mp4_file_path}")
+        video_stream.download(output_path=output_path, filename=filename + ".mp4")
+        logging.info(f"MP4 Download Successful!")
 
-        if Path(downloaded_file_path).suffix != ".mp3":
-            os.remove(downloaded_file_path)
-
-        logging.info(f"Download and conversion successful. File saved at: {mp3_file_path}")
-        return str(mp3_file_path)
+        return str(mp3_file_path), str(mp4_file_path)
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")
