@@ -24,7 +24,7 @@ def translate_file(input_file_path, output_file_path, target_language='en', word
         file.write(translated_text)
 
 
-input_file_path = 'texts/transcription_20240120175720.txt'
+input_file_path = 'texts/transcription_20240120230055.txt'
 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
 output_file_path = f'texts/translated_output_{timestamp}.txt'
 translate_file(input_file_path, output_file_path, target_language='tr', word_limit=25)
